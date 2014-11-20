@@ -1,31 +1,26 @@
-/*!
- * Less Long Shadow v1.0
- *
- * Open sourced under MIT license by @zensimilia.
- */
-
 // Text-shadow
-.longShadow(@color, @size, @spread: 100, @flag: 1, @tmp: '') when (@size > 0) {
-  @percent: round(@flag / @size * 100) * @spread;
-  @shadowColor: fade(@color, @percent);
-  @shadow: ~"@{size}px @{size}px 1px @{shadowColor}";
-  @ends: ~"@{shadow}, @{tmp}";
-  @shadowString: ~"@{ends} 0px 0px 1px #000";
+.longShadow(@color, @backgroundColor, @size,@max,@min, @spread: 100, @flag: 1, @tmp: '') when (@size > 0) {
+    @diff: max((@max - @min), (@min - @max));
+    @percent: @max - ((round(@size / @flag * 100) / 100) * @diff);
+    @shadowColor: overlay(fade(@color, @percent),@backgroundColor);
+    @shadow: ~"@{size}px @{size}px 1px @{shadowColor}";
+    @ends: ~"@{shadow}, @{tmp}";
+    @shadowString: ~"@{ends} 0px 0px 1px rgba(0,0,0,0)";
 
-  .longShadowLoop(@string, @index) when (@index < 1) {
-    text-shadow: @string;
-  }
+    .longShadowLoop(@string, @index) when (@index < 1) {
+        text-shadow: @string;
+    }
 
-  .longShadowLoop(@shadowString, @size - 1);
-  .longShadow(@color, @size - 1, @spread, @flag + 1, @ends);
+    .longShadowLoop(@shadowString, @size - 1);
+    .longShadow(@color, @backgroundColor,@size - 1,@max,@min, @spread, @flag + 1, @ends);
 }
 
 // Box-shadow
-.longShadowBox(@color, @size, @max, @min, @flag: 1, @tmp: '') when (@size > 0) {
+.longShadowBox(@color, @backgroundColor, @size, @max, @min, @flag: 1, @tmp: '') when (@size > 0) {
     // Forgiving max/min ;)
     @diff: max((@max - @min), (@min - @max));
     @percent: @max - ((round(@size / @flag * 100) / 100) * @diff);
-    @shadowColor: fade(@color, @percent);
+    @shadowColor: overlay(fade(@color, @percent),@backgroundColor);
     @shadow: ~"@{size}px @{size}px 0 0 @{shadowColor}";
     @ends: ~"@{shadow}, @{tmp}";
     @shadowString: ~"@{ends} 0px 0px 0 0 #000";
@@ -38,5 +33,5 @@
     }
 
     .longShadowLoop(@shadowString, @size - 1);
-    .longShadowBox(@color, @size - 1, @max, @min, @flag + 1, @ends);
+    .longShadowBox(@color, @backgroundColor, @size - 1, @max, @min, @flag + 1, @ends);
 }
